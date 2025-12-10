@@ -1,0 +1,25 @@
+# Wrangler config - fill placeholders before deploying
+name = "spyrofluff-site"
+main = "./worker/index.js"
+compatibility_date = "2025-12-09"
+
+# Replace with your Cloudflare account id
+account_id = "YOUR_ACCOUNT_ID"
+
+# For Pages, you can deploy the static `sitio` folder and use this Worker for API.
+
+# MongoDB Data API configuration (set secrets/vars instead of hardcoding values):
+# You should create a Data API key in MongoDB Atlas and set it as a secret:
+#   wrangler secret put MONGODB_DATA_API_KEY
+# And set the other values either in `wrangler.toml` as vars or via the dashboard:
+[vars]
+MONGODB_DATA_API_URL = "https://data.mongodb-api.com/app/<app-id>/endpoint/data/v1"
+MONGODB_DATA_SOURCE = "<DataSourceName>"
+MONGODB_DATABASE = "<DatabaseName>"
+MONGODB_COLLECTION = "<CollectionName>"
+
+# Store secret for the API key with wrangler when deploying:
+# wrangler secret put MONGODB_DATA_API_KEY
+
+# Optional: set type = "esm" for modules if using newer Workers setup
+# type = "javascript"

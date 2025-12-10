@@ -1,0 +1,126 @@
+#titulo{
+    font-family: "Bitcount Prop Double Ink", system-ui;
+    text-align: center;
+}
+:root{
+    --bg:#0f1720;
+    --card:#0f2633;
+    --accent:#ffb86b;
+    --text:#e6eef6;
+    --muted:#9fb0c0;
+    --maxwidth:980px;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+    margin:0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Bitcount Prop Double Ink", sans-serif;
+    background: linear-gradient(180deg, #071018 0%, #07232b 60%);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+}
+
+.container{
+    max-width:var(--maxwidth);
+    margin:24px auto;
+    padding:16px;
+}
+
+/* Topbar / Navigation */
+.topbar{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));position:sticky;top:0;z-index:30}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px}
+.brand{font-weight:700;color:var(--accent);text-decoration:none;font-size:18px}
+.nav-toggle{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--text);padding:8px 10px;border-radius:8px;font-size:18px;display:inline-flex;align-items:center;gap:6px}
+.nav-menu{display:flex;gap:12px;align-items:center}
+.nav-menu a{color:var(--text);text-decoration:none;padding:8px;border-radius:6px}
+.nav-menu a:hover{background:rgba(255,255,255,0.02)}
+
+/* Mobile behavior */
+@media(max-width:720px){
+    .nav-menu{position:absolute;right:12px;top:56px;background:rgba(2,6,10,0.8);flex-direction:column;padding:8px;border-radius:8px;display:none;min-width:160px}
+    .nav-menu.open{display:flex}
+    .brand{font-size:16px}
+    .topbar-inner{padding:8px}
+}
+
+#titulo{
+    font-family: "Bitcount Prop Double Ink", system-ui;
+    text-align:center;
+    font-size: clamp(28px, 4vw, 48px);
+    margin: 8px 0 16px 0;
+    color:var(--accent);
+    text-shadow:0 2px 10px rgba(0,0,0,0.6);
+}
+
+.card{
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:10px;
+    padding:16px;
+    box-shadow: 0 6px 20px rgba(2,6,10,0.6);
+}
+
+#viejas{
+    font-family: "Bitcount Prop Double Ink", system-ui;
+    text-align:left;
+    font-size:16px;
+    margin-top:8px;
+    margin-bottom:8px;
+}
+
+.entries{list-style:none;padding:0;margin:8px 0;display:grid;grid-template-columns:1fr;gap:12px}
+.entries li{display:block}
+.entry-link{display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--text);padding:8px;border-radius:8px;transition:background .18s, transform .12s}
+.entry-link:hover{background:rgba(255,255,255,0.02);transform:translateY(-3px)}
+.entry-thumb{width:140px;height:auto;border-radius:6px;object-fit:cover;flex-shrink:0}
+.entry-title{font-weight:700;font-size:18px;color:var(--text)}
+
+/* Article styles */
+.article{max-width:780px;margin:20px auto;padding:20px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.0));border-radius:10px}
+.article h1{font-size:28px;margin:0 0 8px;color:var(--accent)}
+.meta{color:var(--muted);font-size:13px;margin-bottom:14px}
+.article img.feature{max-width:100%;height:auto;border-radius:8px;margin:12px 0}
+.article p{line-height:1.6;color:var(--text);margin-bottom:12px}
+
+.backlink{display:inline-block;margin-top:12px;color:var(--accent);text-decoration:none}
+
+@media(min-width:700px){
+    .entries{grid-template-columns:1fr 1fr}
+}
+
+@media(prefers-reduced-motion:reduce){
+    .entry-link{transition:none}
+}
+
+/* Publish form styles */
+.publish-form{display:flex;flex-direction:column;gap:12px}
+.publish-form .form-row{display:flex;flex-direction:column;gap:8px}
+.publish-form label{font-weight:600}
+.publish-form .muted{color:var(--muted);font-size:13px}
+.publish-form textarea, .publish-form input[type="text"]{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);color:var(--text);padding:10px;border-radius:8px;font-size:14px;resize:vertical}
+.publish-form textarea:focus, .publish-form input[type="text"]:focus{outline:none;box-shadow:0 0 0 3px rgba(255,184,107,0.08);border-color:var(--accent)}
+.form-foot{display:flex;justify-content:flex-end}
+.form-foot #charcount{font-size:13px;color:var(--muted)}
+.actions{display:flex;gap:8px;align-items:center}
+.btn-primary{background:var(--accent);color:#091017;padding:10px 14px;border-radius:8px;border:none;font-weight:700}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--text);padding:8px 12px;border-radius:8px}
+.status{margin-left:8px;color:var(--text);font-size:14px}
+
+@media(max-width:520px){
+    .actions{flex-direction:column;align-items:stretch}
+}
+
+/* Entry card styles */
+.entry-card{display:flex;flex-direction:column;gap:10px;padding:12px}
+.entry-title{font-weight:800;color:var(--accent);margin-bottom:6px}
+.entry-body{color:var(--text);max-height:220px;overflow:hidden}
+.entry-controls{display:flex;gap:8px;align-items:center}
+.btn-vote{background:transparent;border:none;color:var(--muted);font-size:18px;padding:6px;border-radius:6px}
+.btn-vote:hover{color:var(--accent);transform:translateY(-2px)}
+.count{font-weight:700;color:var(--text);min-width:28px;text-align:center}
+.btn-report{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:6px 8px;border-radius:6px;color:var(--text)}
+.entry-link.small{margin-left:auto;color:var(--accent);text-decoration:none}
+
+@media(max-width:520px){
+    .entry-controls{flex-wrap:wrap}
+}

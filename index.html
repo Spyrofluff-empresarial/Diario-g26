@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Diario 3ºMC</title>
+        <meta name="description" content="Diario de curso 3ºMC">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Bitcount+Prop+Double+Ink:wght@100..900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <header class="topbar">
+            <div class="container topbar-inner">
+                <a class="brand" href="index.html">Diario 3ºMC</a>
+                <button class="nav-toggle" aria-controls="main-nav" aria-expanded="false" aria-label="Abrir menú">≡</button>
+                <nav id="main-nav" class="nav-menu" aria-hidden="true">
+                    <a href="index.html">Inicio</a>
+                    <a href="entrada1.html">Entrada 1</a>
+                </nav>
+            </div>
+        </header>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <main class="container">
+            <section id="viejas" class="card">
+                <h2>Últimas entradas</h2>
+                <p>Entradas recientes del diario:</p>
+                <div id="entries-list" class="entries">
+                    <!-- entries will be loaded here by script.js -->
+                </div>
+            </section>
+            <section id="publish" class="card">
+                <h2>Publicar de forma anónima</h2>
+                <p class="muted">Comparte una entrada breve y verificada. Evita difamar o publicar datos personales.</p>
+                <form id="publish-form" class="publish-form">
+                    <div class="form-row">
+                        <label for="content">Texto</label>
+                        <small class="muted">máx. 2000 caracteres — explica hechos y fuentes cuando puedas</small>
+                        <textarea id="content" name="content" rows="6" maxlength="2000" placeholder="Describe lo ocurrido con hechos verificables" required></textarea>
+                        <div class="form-foot">
+                            <span id="charcount">0/2000</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="tags">Etiquetas (opcional)</label>
+                        <input id="tags" name="tags" type="text" placeholder="ej. aviso, incidente">
+                    </div>
+
+                    <div class="form-row actions">
+                        <button id="publish-btn" type="submit" class="btn-primary">Publicar anónimamente</button>
+                        <button id="publish-clear" type="button" class="btn-ghost">Limpiar</button>
+                        <div id="publish-status" class="status" aria-live="polite"></div>
+                    </div>
+                </form>
+            </section>
+        </main>
+        <!-- Consent banner -->
+        <div id="consent-banner" class="card" style="position:fixed;left:12px;right:12px;bottom:12px;display:none;z-index:60">
+            <div class="container" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                <div>
+                    <strong>Permitir cookies</strong>
+                    <div class="muted">Acepta cookies para identificar tu dispositivo y permitir un voto por dispositivo. Se guarda sólo un identificador anónimo.</div>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center">
+                    <button id="consent-accept" class="btn-primary">Aceptar</button>
+                    <button id="consent-decline" class="btn-ghost">Rechazar</button>
+                </div>
+            </div>
+        </div>
+
+        <script src="script.js" defer></script>
+    </body>
+</html>
