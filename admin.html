@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrador - Diario Anónimo</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 24px;
+        }
+
+        .login-panel {
+            background: linear-gradient(135deg, rgba(15,38,51,0.4) 0%, rgba(15,22,32,0.35) 100%);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 400px;
+            margin: 80px auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .login-panel h1 {
+            text-align: center;
+            color: var(--accent);
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .login-panel .form-group {
+            margin-bottom: 20px;
+        }
+
+        .login-panel label {
+            display: block;
+            color: var(--text);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .login-panel input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.02);
+            color: var(--text);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .login-panel input[type="password"]:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(255,255,255,0.05);
+            box-shadow: 0 0 20px rgba(255,184,107,0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #ffb86b 0%, #ff9500 100%);
+            color: #0f1720;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255,152,0,0.3);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255,152,0,0.5);
+            background: linear-gradient(135deg, #ffc84d 0%, #ffaa1a 100%);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(255,152,0,0.3);
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            text-align: center;
+            margin-bottom: 15px;
+            display: none;
+            font-size: 14px;
+        }
+
+        /* Admin Dashboard */
+        .admin-dashboard {
+            display: none;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .admin-header h1 {
+            color: var(--accent);
+            font-size: 28px;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            flex-wrap: wrap;
+        }
+
+        .admin-tab {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .admin-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .admin-tab:hover {
+            color: var(--text);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .entries-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .entry-item {
+            background: linear-gradient(135deg, rgba(15,38,51,0.3) 0%, rgba(15,22,32,0.25) 100%);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 16px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 15px;
+            align-items: start;
+        }
+
+        .entry-info h3 {
+            color: var(--accent);
+            margin: 0 0 8px 0;
+            font-size: 16px;
+        }
+
+        .entry-info p {
+            color: var(--text);
+            margin: 4px 0;
+            font-size: 14px;
+            max-width: 500px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .entry-meta {
+            color: var(--muted);
+            font-size: 12px;
+            margin: 8px 0 0 0;
+        }
+
+        .entry-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-delete {
+            padding: 8px 14px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+        }
+
+        .btn-restore {
+            padding: 8px 14px;
+            background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-restore:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(55, 178, 77, 0.3);
+        }
+
+        .btn-pin {
+            padding: 8px 14px;
+            background: linear-gradient(135deg, #ffd43b 0%, #ffb703 100%);
+            color: #0f1720;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .btn-adjust {
+            padding: 8px 14px;
+            background: linear-gradient(135deg, #74c0fc 0%, #4dabf7 100%);
+            color: #0f1720;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .info-icon {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            line-height: 18px;
+            text-align: center;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.03);
+            color: var(--muted);
+            font-size: 12px;
+            cursor: default;
+            margin-left: 8px;
+        }
+
+        .btn-permanent-delete {
+            padding: 8px 14px;
+            background: linear-gradient(135deg, #ff4757 0%, #cc3d4d 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-permanent-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 71, 87, 0.4);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(15,38,51,0.3) 0%, rgba(15,22,32,0.25) 100%);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: var(--muted);
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .value {
+            color: var(--accent);
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .comment-item {
+            background: linear-gradient(135deg, rgba(15,38,51,0.2) 0%, rgba(15,22,32,0.15) 100%);
+            border-left: 3px solid var(--accent);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .comment-item .author {
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .comment-item .text {
+            color: var(--text);
+            margin: 6px 0;
+            font-size: 14px;
+        }
+
+        .comment-item .meta {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--muted);
+            padding: 40px 20px;
+        }
+
+        .empty-state p {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">📔 Diario - Admin</div>
+            <div class="nav-menu">
+                <a href="index.html">← Volver al diario</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-container">
+        <!-- Login Panel -->
+        <div class="login-panel" id="loginPanel" style="display: block;">
+            <h1>Acceso de Administrador</h1>
+            <div class="error-message" id="errorMessage"></div>
+            <div class="form-group">
+                <label for="passkey">Contraseña de Administrador:</label>
+                <input type="password" id="passkey" placeholder="Ingresa la passkey">
+            </div>
+            <button class="login-btn" id="loginBtn">Ingresar</button>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div class="admin-dashboard" id="adminDashboard" style="display: none;">
+            <div class="admin-header">
+                <h1>Panel de Administración</h1>
+                <button class="logout-btn" id="logoutBtn">Cerrar Sesión</button>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <h3>Total Entradas</h3>
+                    <div class="value" id="totalEntries">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Comentarios</h3>
+                    <div class="value" id="totalComments">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Entradas Archivadas</h3>
+                    <div class="value" id="archivedEntries">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Entradas en Papelera</h3>
+                    <div class="value" id="deletedEntries">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Comentarios Eliminados</h3>
+                    <div class="value" id="deletedComments">0</div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="entries">Entradas</button>
+                <button class="admin-tab" data-tab="comments">Comentarios</button>
+                <button class="admin-tab" data-tab="reports">Reportes</button>
+                <button class="admin-tab" data-tab="recycle">🗑️ Papelera</button>
+            </div>
+
+            <!-- Entries Tab -->
+            <div class="tab-content active" id="entriesTab">
+                <h2 style="color: var(--text); margin-top: 0;">Gestión de Entradas</h2>
+                <div class="entries-grid" id="entriesList">
+                    <div class="empty-state">
+                        <p>Cargando entradas...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments Tab -->
+            <div class="tab-content" id="commentsTab">
+                <h2 style="color: var(--text); margin-top: 0;">Gestión de Comentarios</h2>
+                <div id="commentsList">
+                    <div class="empty-state">
+                        <p>Cargando comentarios...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div class="tab-content" id="reportsTab">
+                <h2 style="color: var(--text); margin-top: 0;">Reportes Pendientes</h2>
+                <div id="reportsList">
+                    <div class="empty-state">
+                        <p>Cargando reportes...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recycle Bin Tab -->
+            <div class="tab-content" id="recycleTab">
+                <h2 style="color: var(--text); margin-top: 0;">Papelera de Reciclaje</h2>
+                <div class="entries-grid" id="deletedEntriesList">
+                    <div class="empty-state">
+                        <p>Cargando papelera...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const loginPanel = document.getElementById('loginPanel');
+        const adminDashboard = document.getElementById('adminDashboard');
+        const passKeyInput = document.getElementById('passkey');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Check if already logged in
+        function checkAuth() {
+            const token = localStorage.getItem('admin_token');
+            if (token) {
+                showDashboard();
+                loadAdminData();
+            }
+        }
+
+        loginBtn.addEventListener('click', async function() {
+            const passkey = passKeyInput.value.trim();
+            if (!passkey) {
+                showError('Ingresa la contraseña');
+                return;
+            }
+
+            loginBtn.disabled = true;
+            try {
+                const res = await fetch('/api/admin/verify-passkey', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ passkey })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    localStorage.setItem('admin_token', data.token);
+                    showDashboard();
+                    loadAdminData();
+                } else {
+                    const data = await res.json();
+                    showError(data.message || 'Contraseña incorrecta');
+                }
+            } catch (e) {
+                console.error('Error:', e);
+                showError('Error de conexión');
+            } finally {
+                loginBtn.disabled = false;
+            }
+        });
+
+        passKeyInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') loginBtn.click();
+        });
+
+        logoutBtn.addEventListener('click', function() {
+            localStorage.removeItem('admin_token');
+            passKeyInput.value = '';
+            showLogin();
+        });
+
+        function showError(msg) {
+            errorMessage.textContent = msg;
+            errorMessage.style.display = 'block';
+        }
+
+        function showLogin() {
+            loginPanel.style.display = 'block';
+            adminDashboard.style.display = 'none';
+            errorMessage.style.display = 'none';
+        }
+
+        function showDashboard() {
+            loginPanel.style.display = 'none';
+            adminDashboard.style.display = 'block';
+        }
+
+        // Load admin data
+        async function loadAdminData() {
+            const token = localStorage.getItem('admin_token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('/api/admin/data', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    renderStats(data.stats);
+                    renderEntries(data.entries);
+                    renderDeletedEntries(data.deleted_entries);
+                    renderComments(data.comments);
+                    renderReports(data.reports);
+                } else if (res.status === 401) {
+                    localStorage.removeItem('admin_token');
+                    showLogin();
+                }
+            } catch (e) {
+                console.error('Error loading admin data:', e);
+            }
+        }
+
+        function renderStats(stats) {
+            document.getElementById('totalEntries').textContent = stats.total_entries || 0;
+            document.getElementById('totalComments').textContent = stats.total_comments || 0;
+            document.getElementById('archivedEntries').textContent = stats.archived_entries || 0;
+            document.getElementById('deletedEntries').textContent = stats.deleted_entries || 0;
+            document.getElementById('deletedComments').textContent = stats.deleted_comments || 0;
+        }
+
+        function renderEntries(entries) {
+            const list = document.getElementById('entriesList');
+            if (!entries || entries.length === 0) {
+                list.innerHTML = '<div class="empty-state"><p>Sin entradas</p></div>';
+                return;
+            }
+
+            list.innerHTML = entries.map(entry => `
+                <div class="entry-item">
+                    <div class="entry-info">
+                        <h3>Entrada #${entry.id}</h3>
+                            <p>${escapeHtml(entry.content.slice(0, 100))}${entry.content.length > 100 ? '...' : ''}</p>
+                                <div class="entry-meta">
+                                    Votos: ${entry.upvotes} up / ${entry.downvotes} down | Reportes: ${entry.reports || 0} | Visitas: ${entry.view_count || 0}
+                                    <span class="info-icon" onmouseenter="showBrowserInfo(${entry.id}, this)" title="Hover to load browser info">i</span>
+                                    ${entry.is_pinned ? '<span style="color:#ffd43b; margin-left:8px; font-weight:700">📌 Fijado</span>' : ''}
+                                    ${entry.manipulated ? '<span style="color:#ff6b6b; margin-left:8px; font-weight:700">⚠️ Manipulado</span>' : ''}
+                                </div>
+                    </div>
+                    <div class="entry-actions">
+                        <button class="btn-pin" onclick="pinEntry(${entry.id})">Fijar</button>
+                            <button class="btn-adjust" onclick="adjustVotesPrompt(${entry.id})">Ajustar Votos</button>
+                            <button class="btn-delete" onclick="deleteEntry(${entry.id})">Mover a Papelera</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderDeletedEntries(entries) {
+            const list = document.getElementById('deletedEntriesList');
+            if (!entries || entries.length === 0) {
+                list.innerHTML = '<div class="empty-state"><p>Papelera vacía</p></div>';
+                return;
+            }
+
+            list.innerHTML = entries.map(entry => `
+                <div class="entry-item">
+                    <div class="entry-info">
+                        <h3>Entrada #${entry.id}</h3>
+                        <p>${escapeHtml(entry.content.slice(0, 100))}${entry.content.length > 100 ? '...' : ''}</p>
+                             <div class="entry-meta">
+                                Votos: ${entry.upvotes} up / ${entry.downvotes} down | Reportes: ${entry.reports || 0} | Visitas: ${entry.view_count || 0}
+                                <span class="info-icon" onmouseenter="showBrowserInfo(${entry.id}, this)" title="Hover to load browser info">i</span>
+                                ${entry.is_pinned ? '<span style="color:#ffd43b; margin-left:8px; font-weight:700">📌 Fijado</span>' : ''}
+                                ${entry.manipulated ? '<span style="color:#ff6b6b; margin-left:8px; font-weight:700">⚠️ Manipulado</span>' : ''}
+                            </div>
+                    </div>
+                    <div class="entry-actions">
+                        <button class="btn-restore" onclick="restoreEntry(${entry.id})">Restaurar</button>
+                        <button class="btn-permanent-delete" onclick="permanentlyDeleteEntry(${entry.id})">Eliminar Permanentemente</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderComments(comments) {
+            const list = document.getElementById('commentsList');
+            if (!comments || comments.length === 0) {
+                list.innerHTML = '<div class="empty-state"><p>Sin comentarios</p></div>';
+                return;
+            }
+
+            list.innerHTML = comments.map(comment => `
+                <div class="comment-item">
+                    <div class="author">Entrada #${comment.entry_id} - Anónimo</div>
+                    <div class="text">${escapeHtml(comment.content)}</div>
+                    <div class="meta">
+                        Votos: ${comment.upvotes} up / ${comment.downvotes} down | Reportes: ${comment.reports || 0}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderReports(reports) {
+            const list = document.getElementById('reportsList');
+            if (!reports || reports.length === 0) {
+                list.innerHTML = '<div class="empty-state"><p>Sin reportes pendientes</p></div>';
+                return;
+            }
+
+            list.innerHTML = reports.map(report => `
+                <div style="background: rgba(255,107,107,0.1); border-left: 3px solid #ff6b6b; padding: 12px; margin-bottom: 10px; border-radius: 6px;">
+                    <div style="color: var(--accent); font-weight: 600; margin-bottom: 6px;">
+                        ${report.type === 'entry' ? `Entrada #${report.target_id}` : `Comentario #${report.target_id}`}
+                    </div>
+                    <div style="color: var(--text); font-size: 14px; margin-bottom: 6px;">Razón: ${escapeHtml(report.reason) || 'Sin especificar'}</div>
+                    <div style="color: var(--muted); font-size: 12px;">Reportes: ${report.report_count} | Votos: ${report.upvotes}</div>
+                </div>
+            `).join('');
+        }
+
+        async function deleteEntry(entryId) {
+            const token = localStorage.getItem('admin_token');
+            try {
+                const res = await fetch(`/api/admin/entries/${entryId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    loadAdminData();
+                } else {
+                    alert('Error al mover a papelera');
+                }
+            } catch (e) {
+                console.error('Error:', e);
+            }
+        }
+
+        async function restoreEntry(entryId) {
+            const token = localStorage.getItem('admin_token');
+            try {
+                const res = await fetch(`/api/admin/entries/${entryId}/restore`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    loadAdminData();
+                } else {
+                    alert('Error al restaurar');
+                }
+            } catch (e) {
+                console.error('Error:', e);
+            }
+        }
+
+        async function permanentlyDeleteEntry(entryId) {
+            if (!confirm('¿Estás seguro? Esta acción no se puede deshacer.')) return;
+
+            const token = localStorage.getItem('admin_token');
+            try {
+                const res = await fetch(`/api/admin/entries/${entryId}/permanent`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    loadAdminData();
+                } else {
+                    alert('Error al eliminar permanentemente');
+                }
+            } catch (e) {
+                console.error('Error:', e);
+            }
+        }
+
+        // Admin actions: pin, adjust votes, browser info
+        async function pinEntry(entryId) {
+            const token = localStorage.getItem('admin_token');
+            try {
+                const res = await fetch(`/api/admin/entries/${entryId}/pin`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) loadAdminData();
+            } catch (e) { console.error(e); }
+        }
+
+        function adjustVotesPrompt(entryId) {
+            const upChange = parseInt(prompt('Incremento de upvotes (puede ser negativo):', '0') || '0', 10);
+            const downChange = parseInt(prompt('Incremento de downvotes (puede ser negativo):', '0') || '0', 10);
+            if (isNaN(upChange) || isNaN(downChange)) return alert('Valores inválidos');
+            adjustVotes(entryId, upChange, downChange);
+        }
+
+        async function adjustVotes(entryId, upChange, downChange) {
+            const token = localStorage.getItem('admin_token');
+            try {
+                const res = await fetch(`/api/admin/entries/${entryId}/adjust-votes`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
+                    body: JSON.stringify({ upvote_change: upChange, downvote_change: downChange })
+                });
+                if (res.ok) loadAdminData(); else alert('Error al ajustar votos');
+            } catch (e) { console.error(e); }
+        }
+
+        async function showBrowserInfo(entryId, el) {
+            // Fetch browser info and put it into the title for hover
+            const token = localStorage.getItem('admin_token');
+            try {
+                const res = await fetch(`/api/admin/entries/${entryId}/browser-info`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!res.ok) return;
+                const data = await res.json();
+                const b = data.browser_info || {};
+                const summary = `UA: ${b.user_agent || 'N/A'}\nIP: ${b.ip || 'N/A'}\nTS: ${b.timestamp || 'N/A'}`;
+                el.setAttribute('title', summary);
+            } catch (e) { console.error(e); }
+        }
+
+        function escapeHtml(s) {
+            return (s || '').replace(/[&<>"]/g, function(c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+            });
+        }
+
+        // Tab switching
+        document.querySelectorAll('.admin-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById(tabName + 'Tab').classList.add('active');
+            });
+        });
+
+        // Initialize
+        checkAuth();
+    </script>
+</body>
+</html>

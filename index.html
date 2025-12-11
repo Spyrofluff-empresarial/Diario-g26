@@ -22,7 +22,6 @@
                 <button class="nav-toggle" aria-controls="main-nav" aria-expanded="false" aria-label="Abrir menú">≡</button>
                 <nav id="main-nav" class="nav-menu" aria-hidden="true">
                     <a href="index.html">Inicio</a>
-                    <a href="entrada1.html">Entrada 1</a>
                 </nav>
             </div>
         </header>
@@ -31,8 +30,7 @@
         <![endif]-->
         <main class="container">
             <section id="viejas" class="card">
-                <h2>Últimas entradas</h2>
-                <p>Entradas recientes del diario:</p>
+                <h2>Últimas publicaciones</h2>
                 <div id="entries-list" class="entries">
                     <!-- entries will be loaded here by script.js -->
                 </div>
@@ -55,6 +53,20 @@
                         <input id="tags" name="tags" type="text" placeholder="ej. aviso, incidente">
                     </div>
 
+                    <div class="form-row">
+                        <label for="images">Imágenes (opcional)</label>
+                        <small class="muted">Máximo 3 imágenes. Formatos: JPG, PNG, WebP</small>
+                        <input id="images" name="images" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+                        <div id="image-preview" class="preview-container"></div>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="video">Video (opcional)</label>
+                        <small class="muted">Máximo 1 video. Formatos: MP4, WebM</small>
+                        <input id="video" name="video" type="file" accept="video/mp4,video/webm">
+                        <div id="video-preview" class="preview-container"></div>
+                    </div>
+
                     <div class="form-row actions">
                         <button id="publish-btn" type="submit" class="btn-primary">Publicar anónimamente</button>
                         <button id="publish-clear" type="button" class="btn-ghost">Limpiar</button>
@@ -73,6 +85,44 @@
                 <div style="display:flex;gap:8px;align-items:center">
                     <button id="consent-accept" class="btn-primary">Aceptar</button>
                     <button id="consent-decline" class="btn-ghost">Rechazar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Disclaimer Modal -->
+        <div id="disclaimer-modal" class="modal open" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;z-index:100;">
+            <div class="card" style="max-width:500px;padding:32px;border-radius:12px;position:relative;">
+                <h2 style="color:var(--accent);margin-top:0;margin-bottom:20px;font-size:24px;">⚠️ Aviso Importante</h2>
+                <div style="color:var(--text);line-height:1.6;margin-bottom:24px;font-size:15px;">
+                    <p>Este diario anónimo es un espacio seguro para compartir pensamientos y experiencias. Aunque está moderado, <strong>puede contener temas delicados, personales o potencialmente sensibles</strong>.</p>
+                    <p>Por favor, navega con cuidado y respeto hacia los contribuyentes. Si algo te incomoda, puedes reportarlo.</p>
+                    <p>Al continuar, <strong>aceptas que entiendes la naturaleza de este contenido</strong>.</p>
+                </div>
+                <button id="disclaimer-accept" class="btn-view-full" style="width:100%;padding:12px;border:none;border-radius:8px;cursor:pointer;font-size:16px;">Entendido, continuar</button>
+                <div style="text-align:center;margin-top:16px;">
+                    <label style="display:flex;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:13px;cursor:pointer;">
+                        <input type="checkbox" id="disclaimer-dontshow" style="cursor:pointer;">
+                        No volver a mostrar este aviso
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Lightbox Modal -->
+
+        <div id="image-modal" class="modal">
+            <div class="modal-content">
+                <button class="modal-close">&times;</button>
+                <img id="modal-image" class="modal-image" src="" alt="">
+            </div>
+        </div>
+
+        <!-- Entry Details Modal -->
+        <div id="entry-modal" class="modal">
+            <div class="modal-content entry-modal-content">
+                <button class="modal-close">&times;</button>
+                <div id="entry-detail-container">
+                    <!-- Entry details will be loaded here -->
                 </div>
             </div>
         </div>
