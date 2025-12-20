@@ -9,16 +9,13 @@ from flask import Flask, request, jsonify, send_from_directory, g
 import sqlite3
 import os
 import re
-from datetime import datetime, timedelta
+import datetime
 from werkzeug.utils import secure_filename
 import uuid
 import hashlib
 import secrets
 import json
 
-# ============================================================================
-# CONFIGURATION
-# ============================================================================
 
 BASE_DIR = os.path.dirname(__file__)
 DB_PATH = os.path.join(BASE_DIR, 'data.db')
@@ -27,10 +24,9 @@ ADMIN_PASSKEY = os.environ.get('ADMIN_PASSKEY', 'admin123')
 JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-change-in-production')
 RECYCLE_BIN_RETENTION_DAYS = 7
 
-# Ensure uploads directory exists
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 
-# File upload configuration
+
 ALLOWED_IMAGE_EXTENSIONS = {'jpg', 'jpeg', 'png', 'webp'}
 ALLOWED_VIDEO_EXTENSIONS = {'mp4', 'webm'}
 MAX_IMAGE_SIZE = 10 * 1024 * 1024  # 10MB
@@ -265,7 +261,7 @@ def get_browser_info():
     browser_info = {
         'user_agent': request.headers.get('User-Agent', 'Unknown'),
         'ip': request.remote_addr or '0.0.0.0',
-        'timestamp': datetime.now().isoformat()
+        'timestamp': datetime.datetime.now(datetime.UTC).isoformat()
     }
     return json.dumps(browser_info)
 
@@ -273,7 +269,7 @@ def get_browser_info():
 def cleanup_deleted_entries():
     """Remove entries from recycle bin older than retention period."""
     db = get_db()
-    cutoff_date = (datetime.now() - timedelta(days=RECYCLE_BIN_RETENTION_DAYS)).isoformat()
+    cutoff_date = (datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=RECYCLE_BIN_RETENTION_DAYS)).isoformat()
     db.execute(
         'DELETE FROM entries WHERE deleted=1 AND deleted_at < ?',
         (cutoff_date,)
@@ -335,7 +331,7 @@ def api_submit():
     if video_file and video_file.filename:
         video = save_uploaded_file(video_file, 'video')
     
-    ts = datetime.utcnow().isoformat() + 'Z'
+    ts = datetime.datetime.now(datetime.UTC).isoformat() + 'Z'
     db = get_db()
     
     # Generate unique identifier and collect browser info
@@ -421,7 +417,7 @@ def api_vote():
         return jsonify({'message':'Entry archived'}), 410
 
     id_type, ident = get_identifier()
-    ts = datetime.utcnow().isoformat() + 'Z'
+    ts = datetime.now(datetime.UTC).isoformat() + 'Z'
     # check existing vote
     cur = db.execute('SELECT id, vote FROM votes WHERE entry_id=? AND identifier=? AND identifier_type=?', (entry_id, ident, id_type))
     existing = cur.fetchone()
@@ -464,7 +460,7 @@ def api_report():
     if cur.fetchone():
         return jsonify({'message':'Already reported'}), 200
 
-    ts = datetime.utcnow().isoformat() + 'Z'
+    ts = datetime.now(datetime.UTC).isoformat() + 'Z'
     db.execute('INSERT INTO reports (entry_id, identifier, identifier_type, reason, ts) VALUES (?,?,?,?,?)', (entry_id, ident, id_type, reason, ts))
     db.commit()
 
@@ -487,7 +483,7 @@ def api_report():
             archive_dir = os.path.join(parent, 'archive')
             os.makedirs(archive_dir, exist_ok=True)
             archive_path = os.path.join(archive_dir, f'entry-{entry_id}.json')
-            entry_obj = {'id': entry_id, 'content': row['content'], 'tags': row['tags'], 'ts': row['ts'], 'archived_at': datetime.utcnow().isoformat() + 'Z', 'reports': reports_cnt, 'upvotes': up}
+            entry_obj = {'id': entry_id, 'content': row['content'], 'tags': row['tags'], 'ts': row['ts'], 'archived_at': datetime.now(datetime.UTC).isoformat() + 'Z', 'reports': reports_cnt, 'upvotes': up}
             try:
                 import json
                 with open(archive_path, 'w', encoding='utf-8') as f:
@@ -499,7 +495,7 @@ def api_report():
             os.makedirs(log_dir, exist_ok=True)
             try:
                 with open(os.path.join(log_dir, 'archive.log'), 'a', encoding='utf-8') as lf:
-                    lf.write(f"{datetime.utcnow().isoformat()}Z ARCHIVE entry {entry_id} reports={reports_cnt} upvotes={up}\n")
+                    lf.write(f"{datetime.now(datetime.UTC).isoformat()}Z ARCHIVE entry {entry_id} reports={reports_cnt} upvotes={up}\n")
             except Exception:
                 pass
 
@@ -569,7 +565,7 @@ def api_post_comment():
         return jsonify({'message':'Cannot comment on deleted entry'}), 410
 
     id_type, ident = get_identifier()
-    ts = datetime.utcnow().isoformat() + 'Z'
+    ts = datetime.now(datetime.UTC).isoformat() + 'Z'
 
     # Insert comment (use default values for upvotes/downvotes/deleted)
     cur = db.execute(
@@ -599,7 +595,7 @@ def api_comment_vote():
         return jsonify({'message':'Comment not found'}), 404
 
     id_type, ident = get_identifier()
-    ts = datetime.utcnow().isoformat() + 'Z'
+    ts = datetime.now(datetime.UTC).isoformat() + 'Z'
 
     # Check existing vote
     cur = db.execute(
@@ -662,7 +658,7 @@ def api_comment_report():
     if cur.fetchone():
         return jsonify({'message':'Already reported'}), 200
     
-    ts = datetime.utcnow().isoformat() + 'Z'
+    ts = datetime.now(datetime.UTC).isoformat() + 'Z'
     db.execute(
         'INSERT INTO comment_reports (comment_id, identifier, identifier_type, reason, ts) VALUES (?,?,?,?,?)',
         (comment_id, ident, id_type, reason, ts)
@@ -701,7 +697,7 @@ def verify_passkey():
     
     # Generate a token
     token = secrets.token_urlsafe(32)
-    admin_tokens[token] = datetime.now().isoformat()
+    admin_tokens[token] = datetime.datetime.now().isoformat()
     
     return jsonify({'token': token})
 
@@ -809,7 +805,7 @@ def delete_entry_admin(entry_id):
         return jsonify({'message': 'Unauthorized'}), 401
     
     db = get_db()
-    now = datetime.now().isoformat()
+    now = datetime.datetime.now(datetime.UTC).isoformat()
     db.execute('UPDATE entries SET deleted=1, deleted_at=? WHERE id=?', (now, entry_id))
     db.commit()
     
@@ -886,7 +882,7 @@ def adjust_entry_votes(entry_id):
     new_downvotes = max(0, row['downvotes'] + downvote_change)
     
     # Mark as manipulated and store timestamp
-    now = datetime.now().isoformat()
+    now = datetime.datetime.now(datetime.UTC).isoformat()
     db.execute(
         'UPDATE entries SET upvotes=?, downvotes=?, manipulated=1, manipulated_at=? WHERE id=?',
         (new_upvotes, new_downvotes, now, entry_id)

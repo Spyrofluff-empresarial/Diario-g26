@@ -174,19 +174,19 @@ document.addEventListener('DOMContentLoaded', function(){
   const disclaimerModal = document.getElementById('disclaimer-modal');
   const disclaimerAccept = document.getElementById('disclaimer-accept');
   const disclaimerDontShow = document.getElementById('disclaimer-dontshow');
-  
-  // Check if user has already seen the disclaimer
+
+  // Show disclaimer only when needed (hidden by default to avoid CLS)
   const disclaimerSeen = localStorage.getItem('disclaimer_seen');
-  if (disclaimerSeen) {
-    disclaimerModal.style.display = 'none';
+  if (!disclaimerSeen) {
+    disclaimerModal.classList.add('open');
   }
-  
+
   if (disclaimerAccept) {
     disclaimerAccept.addEventListener('click', function() {
       if (disclaimerDontShow.checked) {
         localStorage.setItem('disclaimer_seen', 'true');
       }
-      disclaimerModal.style.display = 'none';
+      disclaimerModal.classList.remove('open');
     });
   }
 
@@ -408,11 +408,12 @@ document.addEventListener('DOMContentLoaded', function(){
 
   async function fetchEntries(){
     try{
+      if(entriesList) entriesList.classList.add('loading');
       const resp = await fetch('/api/entries?limit=50');
-      if(!resp.ok) return;
+      if(!resp.ok){ if(entriesList) entriesList.classList.remove('loading'); return; }
       const data = await resp.json();
       renderEntries(data.entries || []);
-    }catch(e){ console.error('fetchEntries',e); }
+    }catch(e){ console.error('fetchEntries',e); if(entriesList) entriesList.classList.remove('loading'); }
   }
 
   function makeEntryNode(entry){
@@ -454,7 +455,12 @@ document.addEventListener('DOMContentLoaded', function(){
 
   function renderEntries(entries){
     if(!entriesList) return;
+    entriesList.classList.remove('loading');
     entriesList.innerHTML = '';
+    if((entries||[]).length === 0){
+      entriesList.innerHTML = '<p style="color: var(--muted); text-align: center; padding: 20px;">No hay publicaciones aún</p>';
+      return;
+    }
     entries.forEach(e=>{
       const node = makeEntryNode(e);
       entriesList.appendChild(node);
